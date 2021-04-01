@@ -16,6 +16,15 @@ import time
 
 import pandas as pd
 
+dict1 = {}
+dict1['1'] = []
+dict1['1'].append(1)
+dict1['1'].append(2)
+print(dict1['1'][1])
+
+ls = [1,2]
+ls.append('1')
+
 #xls_file = pd.ExcelFile('Langara - Daycare RTU Replacement.xlsm')
 #length = len(xls_file.sheet_names)
 
@@ -23,11 +32,22 @@ path = 'C:\\Projects\\S\\SD#46 - Sunshine Coast\\kininnick scool\\1.20.8194.0 SD
 #path = 'C:\\Projects\\L\\Langara College\\1.21.E068.0 Langara Bldg B Recommissioning'
 #path = input('Please enter the file path: ')
 #path = input('Enter Path here: ')
+#path = 'C:\\Projects\\S\\SD#46 - Sunshine Coast\\Halfmoon Bay\\1.20.8226.0 SD46 Halfmoon Bay Elem UV Repl'
 #so apparently you don't need the previous method i made. i will investigate further later today.
 path = os.path.realpath(path)
 
 job1 = Jobs(path)
 job1.explore_directory(job1.job_path)
+job1.set_default_quote()
+quote1_date = job1.quote_dict[0][2]
+quote2_date = job1.quote_dict[1][2]
+new_date = 'Mon Feb 25 09:56:29 2021'
+if quote1_date > quote2_date:
+    print('quote 1 bigger')
+
+if new_date > quote1_date:
+    print('new date bigger')
+
 print(job1.shop_drawings_dict)
 print(job1.estimate_dict)
 print(job1.quote_dict)

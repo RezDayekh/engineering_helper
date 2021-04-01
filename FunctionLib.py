@@ -24,23 +24,79 @@ class Jobs:
         '''this function will look into the file, decides if the file is needed and if so,
         put the file inside the right dictionary'''
 
-        #this is to find the shops
-        if re.search('.+_SD.+', x_file):
-            self.shop_drawings_dict[self.shops_counter] = x_file
-            self.shops_counter += 1
+        #before entering, only check pdf or xlsm files
+        if re.search('.+pdf', x_file) or re.search('.+xlsm', x_file):
 
-        #this is to find the estimate
-        if re.search('.+xlsm', x_file):
-            xls_file = pd.ExcelFile(x_file)
-            xls_file_length = len(xls_file.sheet_names)
-            if re.search('.+[Ee]stimate.+',x_file) or xls_file_length > 15:
-                self.estimate_dict[self.estimate_counter] = x_file
-                self.estimate_counter += 1
+            #this is to find the shops
+            if re.search('.+_SD.+', x_file):
+                self.add_shops(x_file)
 
-        #this is to find the quote
-        if re.search('.+[Qq]uote.+pdf',x_file):
-            self.quote_dict[self.quote_counter] = x_file
-            self.quote_counter += 1
+            #this is to find the estimate
+            if re.search('.+xlsm', x_file):
+                self.add_estimate(x_file)
+
+            #this is to find the quote
+            if re.search('.+[Qq]uote.+',x_file) and re.search('.+pdf', x_file):
+                self.add_quote(x_file)
+
+
+    def add_shops(self, x_file):
+        '''this function will append the shop drawings and its information to the dictionary'''
+        self.shop_drawings_dict[self.shops_counter] = []
+        self.shop_drawings_dict[self.shops_counter].append(x_file)
+        #self.shop_drawings_dict[self.shops_counter].append(time.ctime(os.path.getctime(x_file)))
+        self.shop_drawings_dict[self.shops_counter].append(os.path.getctime(x_file))
+        self.shop_drawings_dict[self.estimate_counter].append(0)
+        self.shops_counter += 1
+
+    def set_default_quote(self):
+        '''this function will loop through the quote dict and set a default quote'''
+        #if there is only one quote, set as default
+        latest_quote_time = 0
+        if len(self.quote_dict) == 1:
+            self.quote_dict[0][2] = 1
+        else:
+            for i in range(0,len(self.quote_dict)):
+                #if the path the quote contain booked, set the quote as default
+                if re.search('.+[Bb]ooked.+', self.quote_dict[i][0]):
+                    self.quote_dict[i][2] = 1
+                    break
+                #here we are comparing time of creation, the latest quote is the default
+                else:
+                    #find the quote with the latest creation time and set the time to the variable
+                    if self.quote_dict[i][1] > latest_quote_time:
+                        latest_quote_time = self.quote_dict[i][1]
+
+            #loop through the dictionary again to set the default quote that matches the time.
+            for j in range(0,len(self.quote_dict)):
+                if latest_quote_time == self.quote_dict[j][1]:
+                    self.quote_dict[j][2] = 1
+                    break
+
+                
+
+    def add_estimate(self, x_file):
+        '''this function will add the estimate and its info to the estimate dictionary'''
+        xls_file = pd.ExcelFile(x_file)
+        xls_file_length = len(xls_file.sheet_names)
+        if re.search('.+[Ee]stimate.+',x_file) or xls_file_length > 15:
+            self.estimate_dict[self.estimate_counter] = []
+            self.estimate_dict[self.estimate_counter].append(x_file)
+            #self.estimate_dict[self.estimate_counter].append(time.ctime(os.path.getctime(x_file)))
+            self.estimate_dict[self.estimate_counter].append(os.path.getctime(x_file))
+            self.estimate_dict[self.estimate_counter].append(0)
+            self.estimate_counter += 1
+
+
+    def add_quote(self,x_file):
+        '''this method will add the quotes and their info to the quote dictionary'''
+        self.quote_dict[self.quote_counter] = []
+        self.quote_dict[self.quote_counter].append(x_file)
+        #self.quote_dict[self.quote_counter].append(time.ctime(os.path.getctime(x_file)))
+        self.quote_dict[self.quote_counter].append(os.path.getctime(x_file))
+        self.quote_dict[self.quote_counter].append(0)
+        self.quote_counter += 1
+
 
     def explore_directory(self, job_path):
         '''this function will loop through the content of a directory
