@@ -2,7 +2,6 @@
 #this is my first attempt to make a software that will help engineering become faster
 
 #first we need to import the modules
-
 #this module allows you to open web browser
 import webbrowser
 #the re is a module for regular expression
@@ -11,11 +10,46 @@ import re
 import os
 #this module made by myself to hold the functions and keep the main clean
 from FunctionLib import Jobs
-
+from graphics import *
+from userInterface import *
 import time
-
 import pandas as pd
 
+
+#path = 'C:\\Projects\\S\\SD#46 - Sunshine Coast\\kininnick scool\\1.20.8194.0 SD46 Kinnikinnick RTU Replace'
+path = 'C:\\Projects\\L\\Langara College\\1.21.E068.0 Langara Bldg B Recommissioning'
+#path = input('Please enter the file path: ')
+#path = input('Enter Path here: ')
+#path = 'C:\\Projects\\S\\SD#46 - Sunshine Coast\\Halfmoon Bay\\1.20.8226.0 SD46 Halfmoon Bay Elem UV Repl'
+#so apparently you don't need the previous method i made. i will investigate further later today.
+path = os.path.realpath(path)
+
+job1 = Jobs(path)
+job1.explore_directory(job1.job_path)
+job1.set_default_quote()
+job1.set_default_estiamte()
+
+
+
+#here is my attempt to add graphics to the software
+jobs_graphics_window = GraphWin('Jobs Documents', 500, 500)
+jobs_graphics_window.setCoords(0,0,5,5)
+jobs_graphics_window.setBackground('grey')
+
+job_interface = JobInterface(jobs_graphics_window, job1)
+
+job_interface.InterfaceDisplay()
+job_interface.InterfaceStart()
+
+
+
+
+
+
+
+
+
+#-----the following could be neccessary but its not used -----------
 dict1 = {}
 dict1['1'] = []
 dict1['1'].append(1)
@@ -28,17 +62,7 @@ ls.append('1')
 #xls_file = pd.ExcelFile('Langara - Daycare RTU Replacement.xlsm')
 #length = len(xls_file.sheet_names)
 
-path = 'C:\\Projects\\S\\SD#46 - Sunshine Coast\\kininnick scool\\1.20.8194.0 SD46 Kinnikinnick RTU Replace'
-#path = 'C:\\Projects\\L\\Langara College\\1.21.E068.0 Langara Bldg B Recommissioning'
-#path = input('Please enter the file path: ')
-#path = input('Enter Path here: ')
-#path = 'C:\\Projects\\S\\SD#46 - Sunshine Coast\\Halfmoon Bay\\1.20.8226.0 SD46 Halfmoon Bay Elem UV Repl'
-#so apparently you don't need the previous method i made. i will investigate further later today.
-path = os.path.realpath(path)
 
-job1 = Jobs(path)
-job1.explore_directory(job1.job_path)
-job1.set_default_quote()
 quote1_date = job1.quote_dict[0][2]
 quote2_date = job1.quote_dict[1][2]
 new_date = 'Mon Feb 25 09:56:29 2021'
@@ -51,20 +75,6 @@ if new_date > quote1_date:
 print(job1.shop_drawings_dict)
 print(job1.estimate_dict)
 print(job1.quote_dict)
-
-
-
-
-
-
-
-
-
-
-
-
-
-#-----the following could be neccessary but its not used ------------
 
 #after this is were we call the funtions
 os.startfile(fl.shop_drawings_dict['shops_1'])
