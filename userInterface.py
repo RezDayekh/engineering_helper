@@ -1,154 +1,129 @@
-from graphics import *
+import tkinter as tk
+from tkinter.ttk import Combobox
+import time
+from FunctionLib import *
 
 
-class JobInterface:
-    """this class will create a calculator
-    the user can only define the background color
-    and buttons colors
-    but not now"""
 
-    def __init__(self,window, job):
-        """initializing the calcualtor """
-        #this is where we will be using the job methods
-        self.job = job
-        #window holder
-        self.window = window    
-        self.number1_str = ""
-        self.number2_str = ""
-        self.operation = ""
-        self.num1 = True
+class MainWindow:
+    '''the main window will display the buttons and the jobs'''
+    def __init__(self, root, all_jobs_info):
+        self.jobs = all_jobs_info
+        #starting the root window
+        self.root = root
+
+        #adding the attributes of the main window
+        #self.selection_label
+
+    def initiate_the_window(self):
+        '''call the displaying functions'''
+        self.__create_top_frame()
+        self.__create_bottom_frame()
 
 
-    #the leading __ indicates that this method is internal to the class
-    def __dispWin(self):
-        """this function will initiate the display window"""
+    def __create_top_frame(self):
+        '''this top frame will have the label, combobox
+        and new job button, and maybe refesh button'''
+        jobs_label = tk.Label(self.root, text='Select Job:')
+        jobs_label.place(x=0, y=10)
+
+        #this is the box that will display the jobs we will use
         
-        #we create a rectangle by giving it a starting point and end point
-        self.displayWin = Rectangle(Point(1,4),Point(4,4.5))
-        #set the color of the object
-        self.displayWin.setFill("white")
-        #drawings the object on the graphics
-        self.displayWin.draw(self.window)
+        #this list will have the jobs
+        quote_list = [111,222,333,444]
+        self.job_choose_box = Combobox(self.root, values=quote_list, state='normal', width=30)
+        self.job_choose_box.place(x=65, y=10)
+        self.job_choose_box.bind('<<ComboboxSelected>>')
 
-        #we create a rectangle by giving it a starting point and end point
-        #x1 = 0.5
-        #increase = 0.75
-        #self.displayWin = Rectangle(Point(x1,3),Point(x1+increase,3.5))
-        #self.displayWin.setFill("white")
-        #self.displayWin.draw(self.window)
-        
-
-    def __buttonPos(self):
-        """this function will display the buttons on the calculator"""
-        x1, x2, y1, y2 = 1, 1.5, 0.25, 0.75
-        button_list = []
-        button_counter = 1
-        self.symb_x = []
-        self.symb_y = []
-        for i in range(0,17):
-            button_list.append(Rectangle(Point(x1,y1), Point(x2,y2)))
-            self.symb_x.append((x1 + x2)/2)
-            self.symb_y.append((y1 + y2)/2)
-            new_y1 = y2 + 0.25
-            new_y2 = new_y1 + 0.5
-            y1 = new_y1
-            y2 = new_y2
-            if button_counter % 4 == 0:
-                new_x1 = x2 + 0.25
-                new_x2 = new_x1 + 0.5
-                x1 = new_x1
-                x2 = new_x2
-                y1 = 0.25
-                y2 = 0.75
-            button_counter += 1
-
-        
+        #this button will add a new job
+        self.new_job_button = tk.Button(self.root, text='+', width=1, height = 1, command=self.__job_entry_window)
+        self.new_job_button.place(x=275, y=7)
 
 
-        self.__buttonDisp(button_list)
+    def __create_bottom_frame(self):
+        '''this will create the files buttons'''
+        shops_button = tk.Button(self.root, text='File', width = 8)
+        shops_button.place(x=90, y=50)
+
+        shops_button = tk.Button(self.root, text='Eweb', width = 8)
+        shops_button.place(x=210, y=50)
+
+        shops_button = tk.Button(self.root, text='Quote', width = 8)
+        shops_button.place(x=30, y=100)
+
+        shops_button = tk.Button(self.root, text='Estimate', width = 8)
+        shops_button.place(x=150, y=100)
+
+        shops_button = tk.Button(self.root, text='PO', width = 8)
+        shops_button.place(x=270, y=100)
+
+        shops_button = tk.Button(self.root, text='Engtool', width = 8)
+        shops_button.place(x=30, y=150)
+
+        shops_button = tk.Button(self.root, text='Shops', width = 8)
+        shops_button.place(x=150, y=150)
+
+        shops_button = tk.Button(self.root, text='As-Builts', width = 8)
+        shops_button.place(x=270, y=150)
+
+    def __job_entry_window(self):
+        '''this will be called when you  press on the new job button
+        that was created in create_top_frame
+        it will create an entry job class'''
+        entry_window = AdditionWindow(self.root,self.jobs)
+        entry_window.initiate_attributes()
+    
+
+class AdditionWindow:
+    '''this window will add the new jobs'''
+    def __init__(self, root, all_jobs_info):
+        self.jobs = all_jobs_info
+        self.root = root
+        self.new_window = tk.Toplevel(self.root)
+        self.new_window.resizable(width=False, height=False)
+        self.new_window.title('Job Path and name')
+        self.new_window.geometry('350x150+10+20')
+
+    def initiate_attributes(self):
+        '''this fucntion will initiate the window'''
+        self.__enter_job_path()
+        self.__enter_job_name()
+        self.__enter_buttons()
 
 
-    def __buttonDisp(self,buttonList):
-        """this function will draw the buttons"""
-        self.buttonList = buttonList
-        for button in self.buttonList:
-            button.setFill("white")
-            button.draw(self.window)
+    def __enter_job_path(self):
+        '''this function will create the job path'''
+        job_path_label = tk.Label(self.new_window, text='Job Path:')
+        job_path_label.place(x=5, y=5)
+        self.job_path_entry = tk.Entry(self.new_window)
+        self.job_path_entry.place(x = 85, y =5, width=250)
 
-    def __symbolDisp(self):
-        """function to display the symbols"""
-        buttons_symbol = ['.','7','4','1','0','8','5','2','=','9','6','3','+','-','x','/', 'Q']
-        self.symbols_list = []
-        for i in range(0,17):
-            Text(Point(self.symb_x[i], self.symb_y[i]), buttons_symbol[i]).draw(self.window)
-            self.symbols_list.append(buttons_symbol[i])
+    def __enter_job_name(self):
+        '''this will create the job name'''
+        job_name_label = tk.Label(self.new_window, text='Job Name:')
+        job_name_label.place(x=5, y=50)
+        self.job_name_entry = tk.Entry(self.new_window)
+        self.job_name_entry.place(x = 85, y =50, width=250)
 
+    def __enter_buttons(self):
+        '''this will create the save and cancel button'''
+        save_button = tk.Button(self.new_window, text='Save', width = 8, command=self.__get_job_info)
+        save_button.place(x=85, y=100)
 
-    def InterfaceStart(self):
-        """this function will start the ability to push buttons"""
-        self.operations_list = ['+','-','x','/']
-        self.numbers_list = ['.','7','4','1','0','8','5','2','9','6','3']
-        self.quit_calc = False
-        while self.quit_calc == False:
-            mouse_click = self.window.getMouse()
-            self.mouseX = mouse_click.getX()
-            self.mouseY = mouse_click.getY()
-            self.__checkButtPos()
+        cancel_button = tk.Button(self.new_window, text='Cancel', width = 8, command=self.__destroy_window)
+        cancel_button.place(x=200, y=100)
 
-    def __checkButtPos(self):
-        """this function will check the position of the pressed buttons"""
-        for i in range(0,17):
-            if ((self.mouseX >= (self.symb_x[i] - 0.25) and self.mouseX <= (self.symb_x[i] + 0.25)) and (self.mouseY >= (self.symb_y[i] - 0.25) and self.mouseY <= (self.symb_y[i] + 0.25))):
-                for symbol in self.symbols_list:
-                    if symbol == self.symbols_list[i]:
-                        self.__checkSymbolEx(symbol)
+    def __get_job_info(self):
+        '''this function will get the job info from the entry objects'''
+        self.job_name = self.job_name_entry.get()
+        self.job_path = self.job_path_entry.get()
+        self.__save_job_info()
 
-    def __checkSymbolEx(self,symbol):
-        """function to test what is the symbol"""                      
-        if symbol in self.numbers_list and self.num1:
-            if symbol == '1':
-                self.job.dispaly_default_quote()
-            if symbol == '2':
-                self.job.display_default_estimate()
-            self.number1_str += symbol
-        elif symbol in self.operations_list:
-            self.operation = symbol
-            self.num1 = False
-        elif symbol in self.numbers_list and not self.num1:
-            self.number2_str += symbol
-        else:
-            self.__equQuit(symbol)
+    def __save_job_info(self):
+        '''this function will get and save the job path to the jobs dictionary'''
+        self.jobs.jobs_dict[self.job_name] = self.job_path
+        self.__destroy_window()
 
-        
-
-    def __equQuit(self,symbol):
-        """function to equate or exit"""
-        if symbol == "=":
-            if self.operation == "+":
-                evaluation = (float(self.number1_str) + float(self.number2_str))
-
-            if self.operation == "-":
-                evaluation = (float(self.number1_str) - float(self.number2_str))
-
-            if self.operation == "/":
-                evaluation = (float(self.number1_str) / float(self.number2_str))
-
-            if self.operation == "x":
-                evaluation = (float(self.number1_str) * float(self.number2_str))
-
-            print("the math is " + str(self.number1_str) + self.operation + str(self.number2_str) + " = " + str(evaluation))
-            self.number1_str = ""
-            self.number2_str = ""
-            self.num1 = True
-        elif symbol == 'Q':
-            self.quit_calc = True
-            self.window.close()
-
-
-
-    def InterfaceDisplay(self):
-        """the function to display the claculator"""
-        self.__dispWin()
-        self.__buttonPos()
-        self.__symbolDisp()
-
+    def __destroy_window(self):
+        '''will be called when save or cancel are hit'''
+        self.new_window.destroy()

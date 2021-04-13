@@ -3,6 +3,13 @@ import os
 import re
 import time
 
+class JobsData:
+    '''this class will hold all the jobs made by the user'''
+    def __init__(self):
+        self.jobs_counter =  0 #this will count the number of jobs entered
+        self.jobs_dict = {} #a dictionary that will hold the name as key and path as value
+
+
 #every job will be an instance of the class jobs
 class Jobs:
     '''this class will initiate every job and store all of it's important data'''

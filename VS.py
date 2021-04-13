@@ -9,11 +9,27 @@ import re
 #this module is used to deal with files and directories
 import os
 #this module made by myself to hold the functions and keep the main clean
-from FunctionLib import Jobs
+from FunctionLib import *
 from graphics import *
 from userInterface import *
 import time
 import pandas as pd
+
+#creating the jobs class
+all_jobs = JobsData()
+
+#Make the main window
+root = tk.Tk()
+root.resizable(width=False, height=False)
+
+main_window = MainWindow(root,all_jobs)
+main_window.initiate_the_window()
+
+#main_window.start ?? maybe
+
+root.title("Job Documents")
+root.geometry('350x200+10+20')
+root.mainloop()
 
 
 #path = 'C:\\Projects\\S\\SD#46 - Sunshine Coast\\kininnick scool\\1.20.8194.0 SD46 Kinnikinnick RTU Replace'
@@ -25,9 +41,9 @@ path = 'C:\\Projects\\L\\Langara College\\1.21.E068.0 Langara Bldg B Recommissio
 path = os.path.realpath(path)
 
 job1 = Jobs(path)
-job1.explore_directory(job1.job_path)
-job1.set_default_quote()
-job1.set_default_estiamte()
+#job1.explore_directory(job1.job_path)
+#job1.set_default_quote()
+#job1.set_default_estiamte()
 
 
 
