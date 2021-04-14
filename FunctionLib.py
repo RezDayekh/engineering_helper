@@ -14,7 +14,7 @@ class JobsData:
 class Jobs:
     '''this class will initiate every job and store all of it's important data'''
 
-    def __init__(self, job_path):
+    def __init__(self, job_path, job_name):
         self.job_path = job_path
         #the following dictionaries will hold the needed files
         self.shop_drawings_dict = {}
@@ -37,6 +37,7 @@ class Jobs:
         if a file is found, it will send it to classify_file'''
         dir_content = os.listdir(job_path)
         for content in dir_content:
+            print(content)
             content_path = job_path + '\\' + content
             #check the type of the content to send to the right function
             if os.path.isfile(content_path):
@@ -121,9 +122,9 @@ class Jobs:
 #========================== Estimate ======================
     def add_estimate(self, x_file):
         '''this function will add the estimate and its info to the estimate dictionary'''
-        xls_file = pd.ExcelFile(x_file)
-        xls_file_length = len(xls_file.sheet_names)
-        if re.search('.+[Ee]stimate.+',x_file) or xls_file_length > 15:
+        #xls_file = pd.ExcelFile(x_file)
+        #xls_file_length = len(xls_file.sheet_names)
+        if re.search('.+[Ee]stimate.+',x_file) or re.search('.+_ES.+',x_file):#or xls_file_length > 15:
             self.estimate_dict[self.estimate_counter] = []
             self.estimate_dict[self.estimate_counter].append(x_file)
             #self.estimate_dict[self.estimate_counter].append(time.ctime(os.path.getctime(x_file)))

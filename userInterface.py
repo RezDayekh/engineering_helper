@@ -11,9 +11,12 @@ class MainWindow:
         self.jobs = all_jobs_info
         #starting the root window
         self.root = root
-
+        self.main_jobs_list = []
         #adding the attributes of the main window
         #self.selection_label
+
+        #we only want one addition window so we initiated it here
+        self.entry_window = AdditionWindow(self.root)#,self.jobs_list)
 
     def initiate_the_window(self):
         '''call the displaying functions'''
@@ -30,14 +33,22 @@ class MainWindow:
         #this is the box that will display the jobs we will use
         
         #this list will have the jobs
-        quote_list = [111,222,333,444]
-        self.job_choose_box = Combobox(self.root, values=quote_list, state='normal', width=30)
+        #quote_list = [111,222,333,444]
+        self.job_choose_box = Combobox(self.root, values=self.main_jobs_list, state='normal', width=30)
         self.job_choose_box.place(x=65, y=10)
         self.job_choose_box.bind('<<ComboboxSelected>>')
 
         #this button will add a new job
         self.new_job_button = tk.Button(self.root, text='+', width=1, height = 1, command=self.__job_entry_window)
         self.new_job_button.place(x=275, y=7)
+
+        self.new_job_button = tk.Button(self.root, text='update', width=5, height = 1, command=self.update_list)
+        self.new_job_button.place(x=300, y=7)
+
+    def update_list(self):
+        self.main_jobs_list = self.entry_window.jobs_list
+        self.job_choose_box['values'] = self.main_jobs_list
+        print('hi')
 
 
     def __create_bottom_frame(self):
@@ -70,15 +81,19 @@ class MainWindow:
         '''this will be called when you  press on the new job button
         that was created in create_top_frame
         it will create an entry job class'''
-        entry_window = AdditionWindow(self.root,self.jobs)
-        entry_window.initiate_attributes()
+        #entry_window = AdditionWindow(self.root)#,self.jobs_list)
+        self.entry_window.display_new_window()
+        self.entry_window.initiate_attributes()
     
 
-class AdditionWindow:
+class AdditionWindow():
     '''this window will add the new jobs'''
-    def __init__(self, root, all_jobs_info):
-        self.jobs = all_jobs_info
+    def __init__(self, root):#, all_jobs_list):
+        self.jobs_list = []
         self.root = root
+
+    def display_new_window(self):
+        '''this function was added to display the addition window whenever the + button is pressed'''
         self.new_window = tk.Toplevel(self.root)
         self.new_window.resizable(width=False, height=False)
         self.new_window.title('Job Path and name')
@@ -121,7 +136,12 @@ class AdditionWindow:
 
     def __save_job_info(self):
         '''this function will get and save the job path to the jobs dictionary'''
-        self.jobs.jobs_dict[self.job_name] = self.job_path
+        self.new_job = {} #a dictionary to hold the new job
+        self.new_job[self.job_name] = Jobs(self.job_path, self.job_name)
+        self.new_job[self.job_name].explore_directory(self.new_job[self.job_name].job_path)
+        self.jobs_list.append(self.new_job)
+
+        #self.jobs.jobs_dict[self.job_name] = self.job_path
         self.__destroy_window()
 
     def __destroy_window(self):
