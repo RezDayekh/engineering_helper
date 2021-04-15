@@ -28,7 +28,7 @@ main_window.initiate_the_window()
 #main_window.start ?? maybe
 
 root.title("Job Documents")
-root.geometry('350x200+10+20')
+root.geometry('350x250+10+20')
 root.mainloop()
 
 

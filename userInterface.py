@@ -11,9 +11,13 @@ class MainWindow:
         self.jobs = all_jobs_info
         #starting the root window
         self.root = root
-        self.main_jobs_list = []
-        #adding the attributes of the main window
-        #self.selection_label
+
+        #the following two variables for selecting the jobs
+        self.main_jobs_dict = {}
+        self.jobs_names_list = []
+
+        #the following variable for saving the last selected job
+        self.selected_job = ''
 
         #we only want one addition window so we initiated it here
         self.entry_window = AdditionWindow(self.root)#,self.jobs_list)
@@ -23,6 +27,10 @@ class MainWindow:
         self.__create_top_frame()
         self.__create_bottom_frame()
 
+        
+    def __select_job(self):
+        '''this function is to test if the combobox calls it'''
+        self.selected_job = self.job_choose_box.get()
 
     def __create_top_frame(self):
         '''this top frame will have the label, combobox
@@ -30,11 +38,19 @@ class MainWindow:
         jobs_label = tk.Label(self.root, text='Select Job:')
         jobs_label.place(x=0, y=10)
 
-        #this is the box that will display the jobs we will use
+        #job buttons
+        select_job_button = tk.Button(self.root, text='Select Job', width = 8, command=self.__select_job)
+        select_job_button.place(x=65, y=45)
+
+        refresh_job_button = tk.Button(self.root, text='Refresh Job', width = 8)
+        refresh_job_button.place(x=135, y=45)
+
+        delete_job_button = tk.Button(self.root, text='Delete Job', width = 8)
+        delete_job_button.place(x=205, y=45)
         
         #this list will have the jobs
         #quote_list = [111,222,333,444]
-        self.job_choose_box = Combobox(self.root, values=self.main_jobs_list, state='normal', width=30)
+        self.job_choose_box = Combobox(self.root, state='normal', width=30)
         self.job_choose_box.place(x=65, y=10)
         self.job_choose_box.bind('<<ComboboxSelected>>')
 
@@ -45,37 +61,54 @@ class MainWindow:
         self.new_job_button = tk.Button(self.root, text='update', width=5, height = 1, command=self.update_list)
         self.new_job_button.place(x=300, y=7)
 
-    def update_list(self):
-        self.main_jobs_list = self.entry_window.jobs_list
-        self.job_choose_box['values'] = self.main_jobs_list
-        print('hi')
 
+   
+
+    def __refresh_job(self):
+        '''this job will go through the path again and get new documents'''
+        pass
+
+    def update_list(self):
+        self.main_jobs_dict = self.entry_window.jobs_dict
+        for key,value in self.main_jobs_dict.items():
+            if key not in self.jobs_names_list:
+                self.jobs_names_list.append(key)
+        self.job_choose_box['values'] = self.jobs_names_list
+
+
+    def __display_quote(self):
+        self.main_jobs_dict[self.selected_job].dispaly_default_quote()
+
+    def __dispaly_estimate(self):
+        self.main_jobs_dict[self.selected_job].display_default_estimate()
 
     def __create_bottom_frame(self):
         '''this will create the files buttons'''
         shops_button = tk.Button(self.root, text='File', width = 8)
-        shops_button.place(x=90, y=50)
+        shops_button.place(x=90, y=100)
 
         shops_button = tk.Button(self.root, text='Eweb', width = 8)
-        shops_button.place(x=210, y=50)
+        shops_button.place(x=210, y=100)
 
-        shops_button = tk.Button(self.root, text='Quote', width = 8)
-        shops_button.place(x=30, y=100)
-
-        shops_button = tk.Button(self.root, text='Estimate', width = 8)
-        shops_button.place(x=150, y=100)
-
-        shops_button = tk.Button(self.root, text='PO', width = 8)
-        shops_button.place(x=270, y=100)
-
-        shops_button = tk.Button(self.root, text='Engtool', width = 8)
+        shops_button = tk.Button(self.root, text='Quote', width = 8, command=self.__display_quote)
         shops_button.place(x=30, y=150)
 
-        shops_button = tk.Button(self.root, text='Shops', width = 8)
+        shops_button = tk.Button(self.root, text='Estimate', width = 8, command=self.__dispaly_estimate)
         shops_button.place(x=150, y=150)
 
-        shops_button = tk.Button(self.root, text='As-Builts', width = 8)
+        shops_button = tk.Button(self.root, text='PO', width = 8)
         shops_button.place(x=270, y=150)
+
+        shops_button = tk.Button(self.root, text='Engtool', width = 8)
+        shops_button.place(x=30, y=200)
+
+        shops_button = tk.Button(self.root, text='Shops', width = 8)
+        shops_button.place(x=150, y=200)
+
+        shops_button = tk.Button(self.root, text='As-Builts', width = 8)
+        shops_button.place(x=270, y=200)
+
+    
 
     def __job_entry_window(self):
         '''this will be called when you  press on the new job button
@@ -89,7 +122,7 @@ class MainWindow:
 class AdditionWindow():
     '''this window will add the new jobs'''
     def __init__(self, root):#, all_jobs_list):
-        self.jobs_list = []
+        self.jobs_dict = {}
         self.root = root
 
     def display_new_window(self):
@@ -137,9 +170,8 @@ class AdditionWindow():
     def __save_job_info(self):
         '''this function will get and save the job path to the jobs dictionary'''
         self.new_job = {} #a dictionary to hold the new job
-        self.new_job[self.job_name] = Jobs(self.job_path, self.job_name)
-        self.new_job[self.job_name].explore_directory(self.new_job[self.job_name].job_path)
-        self.jobs_list.append(self.new_job)
+        self.jobs_dict[self.job_name] = Jobs(self.job_path, self.job_name)
+        self.jobs_dict[self.job_name].explore_directory(self.jobs_dict[self.job_name].job_path)
 
         #self.jobs.jobs_dict[self.job_name] = self.job_path
         self.__destroy_window()

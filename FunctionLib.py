@@ -48,6 +48,9 @@ class Jobs:
                 #send to explore_directory
                 self.explore_directory(content_path)
 
+        #setting the defaults
+        self.set_default_estiamte()
+        self.set_default_quote()
 
     def classify_file(self, x_file):
         '''this function will look into the file, decides if the file is needed and if so,
@@ -98,7 +101,7 @@ class Jobs:
         else:
             for i in range(0,len(self.quote_dict)):
                 #if the path the quote contain booked, set the quote as default
-                if re.search('.+[Bb]ooked.+', self.quote_dict[i][0]):
+                if re.search('.+[Bb]ooked.+', self.quote_dict[i][0]) or re.search('.+_QU',self.quote_dict[i][0]):
                     self.quote_dict[i][2] = 1
                     self.default_quote = self.quote_dict[i][0]
                     break
@@ -136,9 +139,9 @@ class Jobs:
         '''this function will loop through the estimate dict and set a default estimate'''
         #if there is only one quote, set as default
         latest_estiamte_time = 0
-        if len(self.estimate_dict):
+        if len(self.estimate_dict) == 1:
             self.estimate_dict[0][2] = 1
-            #self.default_estimate = self.estimate_dict[0][0]
+            self.default_estimate = self.estimate_dict[0][0]
         else:
             for i in range(0,len(self.estimate_dict)):
                 #if the path the quote contain booked, set the quote as default
@@ -149,12 +152,12 @@ class Jobs:
                 #here we are comparing time of creation, the latest quote is the default
                 else:
                     #find the quote with the latest creation time and set the time to the variable
-                    if self.estimate_dict[i][1] > latest_quote_time:
-                        latest_quote_time = self.estimate_dict[i][1]
+                    if self.estimate_dict[i][1] > latest_estiamte_time:
+                        latest_estiamte_time = self.estimate_dict[i][1]
 
             #loop through the dictionary again to set the default quote that matches the time.
             for j in range(0,len(self.estimate_dict)):
-                if latest_quote_time == self.estimate_dict[j][1]:
+                if latest_estiamte_time == self.estimate_dict[j][1]:
                     self.estimate_dict[j][2] = 1
                     self.default_estimate = self.estimate_dict[i][0]
                     break
