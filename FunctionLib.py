@@ -37,7 +37,7 @@ class Jobs:
         if a file is found, it will send it to classify_file'''
         dir_content = os.listdir(job_path)
         for content in dir_content:
-            print(content)
+            #print(content)
             content_path = job_path + '\\' + content
             #check the type of the content to send to the right function
             if os.path.isfile(content_path):
@@ -101,7 +101,7 @@ class Jobs:
         else:
             for i in range(0,len(self.quote_dict)):
                 #if the path the quote contain booked, set the quote as default
-                if re.search('.+[Bb]ooked.+', self.quote_dict[i][0]) or re.search('.+_QU',self.quote_dict[i][0]):
+                if re.search('.+[Bb]ooked.+', self.quote_dict[i][0]) or re.search('.+_QU.+',self.quote_dict[i][0]):
                     self.quote_dict[i][2] = 1
                     self.default_quote = self.quote_dict[i][0]
                     break
@@ -145,7 +145,7 @@ class Jobs:
         else:
             for i in range(0,len(self.estimate_dict)):
                 #if the path the quote contain booked, set the quote as default
-                if re.search('.+[Bb]ooked.+', self.estimate_dict[i][0]):
+                if re.search('.+[Bb]ooked.+', self.estimate_dict[i][0]) or re.search('.+_ES.+', self.estimate_dict[i][0]):
                     self.estimate_dict[i][2] = 1
                     self.default_estimate = self.estimate_dict[i][0]
                     break

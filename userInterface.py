@@ -29,7 +29,7 @@ class MainWindow:
 
         
     def __select_job(self):
-        '''this function is to test if the combobox calls it'''
+        '''this function will select the right job and call another function to display the buttons'''
         self.selected_job = self.job_choose_box.get()
 
     def __create_top_frame(self):
@@ -50,7 +50,7 @@ class MainWindow:
         
         #this list will have the jobs
         #quote_list = [111,222,333,444]
-        self.job_choose_box = Combobox(self.root, state='normal', width=30)
+        self.job_choose_box = Combobox(self.root, state='readonly', width=30)
         self.job_choose_box.place(x=65, y=10)
         self.job_choose_box.bind('<<ComboboxSelected>>')
 
