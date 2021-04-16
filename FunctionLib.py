@@ -16,20 +16,23 @@ class Jobs:
 
     def __init__(self, job_path, job_name):
         self.job_path = job_path
+
         #the following dictionaries will hold the needed files
         self.shop_drawings_dict = {}
         self.shops_counter = 0
+        self.default_shop_drawing = ''
 
-        self.default_estimate = ''
         self.estimate_dict = {}
         self.estimate_counter = 0
+        self.default_estimate = ''
 
-        self.po_dict = {}
-        self.po_counter = 0
+        self.ab_dict = {}
+        self.ab_counter = 0
+        self.default_ab = ''
 
-        self.default_quote = '' #assigned in set_defualt_quote
         self.quote_dict = {}
         self.quote_counter = 0
+        self.default_quote = '' #assigned in set_defualt_quote
 
     def explore_directory(self, job_path):
         '''this function will loop through the content of a directory
@@ -51,6 +54,8 @@ class Jobs:
         #setting the defaults
         self.set_default_estiamte()
         self.set_default_quote()
+        self.set_default_ab()
+        self.set_default_shops()
 
     def classify_file(self, x_file):
         '''this function will look into the file, decides if the file is needed and if so,
@@ -59,17 +64,69 @@ class Jobs:
         #before entering, only check pdf or xlsm files
         if re.search('.+pdf', x_file) or re.search('.+xlsm', x_file):
 
+            #this is to find the ab
+            if re.search('.+_[Aa][Bb].+', x_file):
+                self.add_ab(x_file)
+
             #this is to find the shops
-            if re.search('.+_SD.+', x_file):
+            if re.search('.+_[Ss][Dd].+', x_file):
                 self.add_shops(x_file)
 
             #this is to find the estimate
-            if re.search('.+xlsm', x_file):
+            #if re.search('.+xlsm', x_file):
+            if re.search('.+_[Ee][Ss].+', x_file):
                 self.add_estimate(x_file)
 
             #this is to find the quote
-            if re.search('.+[Qq]uote.+',x_file) and re.search('.+pdf', x_file):
+            #if re.search('.+[Qq]uote.+',x_file) and re.search('.+pdf', x_file):
+            if re.search('.+_[Qq][Uu].+',x_file):
                 self.add_quote(x_file)
+
+    def display_file(self):
+        '''this function will be called to display the main directory'''
+        os.startfile(self.job_path)
+
+#========================= AB ==========================
+    def add_ab(self,x_file):
+        '''this function will append the as-builts drawings and its information to the dictionary'''
+        self.ab_dict[self.ab_counter] = []
+        self.ab_dict[self.ab_counter].append(x_file)
+        #self.shop_drawings_dict[self.shops_counter].append(time.ctime(os.path.getctime(x_file)))
+        self.ab_dict[self.ab_counter].append(os.path.getctime(x_file))
+        self.ab_dict[self.ab_counter].append(0)
+        self.ab_counter += 1
+
+    def set_default_ab(self):
+        '''this function will loop through the ab dict and set a default quote'''
+        #if there is only one quote, set as default
+        latest_ab_time = 0
+        if len(self.ab_dict) == 1:
+            self.ab_dict[0][2] = 1
+            self.default_ab = self.ab_dict[0][0]
+        else:
+            for i in range(0,len(self.ab_dict)):
+                #if the path the quote contain booked, set the quote as default
+                #if re.search('.+[Bb]ooked.+', self.ab_dict[i][0]) or re.search('.+_[Aa][Bb].+',self.ab_dict[i][0]):
+                if re.search('.+_[Aa][Bb].+',self.ab_dict[i][0]):
+                    self.ab_dict[i][2] = 1
+                    self.default_ab = self.ab_dict[i][0]
+                    break
+                #here we are comparing time of creation, the latest quote is the default
+                else:
+                    #find the quote with the latest creation time and set the time to the variable
+                    if self.ab_dict[i][1] > latest_ab_time:
+                        latest_ab_time = self.ab_dict[i][1]
+
+            #loop through the dictionary again to set the default quote that matches the time.
+            for j in range(0,len(self.ab_dict)):
+                if latest_ab_time == self.ab_dict[j][1]:
+                    self.ab_dict[j][2] = 1
+                    self.default_ab = self.ab_dict[i][0]
+                    break
+
+    def display_default_ab(self):
+        '''this method will be called from the user interface to display the default ab'''
+        os.startfile(self.default_ab)
 
 #========================== Shops ======================
     def add_shops(self, x_file):
@@ -78,9 +135,41 @@ class Jobs:
         self.shop_drawings_dict[self.shops_counter].append(x_file)
         #self.shop_drawings_dict[self.shops_counter].append(time.ctime(os.path.getctime(x_file)))
         self.shop_drawings_dict[self.shops_counter].append(os.path.getctime(x_file))
-        self.shop_drawings_dict[self.estimate_counter].append(0)
+        self.shop_drawings_dict[self.shops_counter].append(0)
         self.shops_counter += 1
 
+    def set_default_shops(self):
+        '''this function will loop through the ab dict and set a default quote'''
+        #if there is only one quote, set as default
+        latest_shop_time = 0
+        if len(self.shop_drawings_dict) == 1:
+            self.shop_drawings_dict[0][2] = 1
+            self.default_shop_drawing = self.shop_drawings_dict[0][0]
+        else:
+            for i in range(0,len(self.shop_drawings_dict)):
+                #if the path the quote contain booked, set the quote as default
+                #if re.search('.+[Bb]ooked.+', self.shop_drawings_dict[i][0]) or re.search('.+_[Ss][Dd].+',self.shop_drawings_dict[i][0]):
+                if re.search('.+_[Ss][Dd].+',self.shop_drawings_dict[i][0]):
+                    self.shop_drawings_dict[i][2] = 1
+                    self.default_shop_drawing = self.shop_drawings_dict[i][0]
+                    break
+                #here we are comparing time of creation, the latest quote is the default
+                else:
+                    #find the quote with the latest creation time and set the time to the variable
+                    if self.shop_drawings_dict[i][1] > latest_shop_time:
+                        latest_shop_time = self.shop_drawings_dict[i][1]
+
+            #loop through the dictionary again to set the default quote that matches the time.
+            for j in range(0,len(self.shop_drawings_dict)):
+                if latest_shop_time == self.shop_drawings_dict[j][1]:
+                    self.shop_drawings_dict[j][2] = 1
+                    self.default_shop_drawing = self.shop_drawings_dict[i][0]
+                    break
+
+    def display_default_shops(self):
+        '''this method will be called from the user interface to display the default shops'''
+        os.startfile(self.default_shop_drawing)
+    
 #========================== Quote ======================
     def add_quote(self,x_file):
         '''this method will add the quotes and their info to the quote dictionary'''
@@ -101,7 +190,8 @@ class Jobs:
         else:
             for i in range(0,len(self.quote_dict)):
                 #if the path the quote contain booked, set the quote as default
-                if re.search('.+[Bb]ooked.+', self.quote_dict[i][0]) or re.search('.+_QU.+',self.quote_dict[i][0]):
+                #if re.search('.+[Bb]ooked.+', self.quote_dict[i][0]) or re.search('.+_[Qq][Uu].+',self.quote_dict[i][0]):
+                if re.search('.+_[Qq][Uu].+',self.quote_dict[i][0]):
                     self.quote_dict[i][2] = 1
                     self.default_quote = self.quote_dict[i][0]
                     break
@@ -127,13 +217,13 @@ class Jobs:
         '''this function will add the estimate and its info to the estimate dictionary'''
         #xls_file = pd.ExcelFile(x_file)
         #xls_file_length = len(xls_file.sheet_names)
-        if re.search('.+[Ee]stimate.+',x_file) or re.search('.+_ES.+',x_file):#or xls_file_length > 15:
-            self.estimate_dict[self.estimate_counter] = []
-            self.estimate_dict[self.estimate_counter].append(x_file)
-            #self.estimate_dict[self.estimate_counter].append(time.ctime(os.path.getctime(x_file)))
-            self.estimate_dict[self.estimate_counter].append(os.path.getctime(x_file))
-            self.estimate_dict[self.estimate_counter].append(0)
-            self.estimate_counter += 1
+        #if re.search('.+[Ee]stimate.+',x_file) or re.search('.+_ES.+',x_file):#or xls_file_length > 15:
+        self.estimate_dict[self.estimate_counter] = []
+        self.estimate_dict[self.estimate_counter].append(x_file)
+        #self.estimate_dict[self.estimate_counter].append(time.ctime(os.path.getctime(x_file)))
+        self.estimate_dict[self.estimate_counter].append(os.path.getctime(x_file))
+        self.estimate_dict[self.estimate_counter].append(0)
+        self.estimate_counter += 1
 
     def set_default_estiamte(self):
         '''this function will loop through the estimate dict and set a default estimate'''
@@ -145,7 +235,8 @@ class Jobs:
         else:
             for i in range(0,len(self.estimate_dict)):
                 #if the path the quote contain booked, set the quote as default
-                if re.search('.+[Bb]ooked.+', self.estimate_dict[i][0]) or re.search('.+_ES.+', self.estimate_dict[i][0]):
+                #if re.search('.+[Bb]ooked.+', self.estimate_dict[i][0]) or re.search('.+_ES.+', self.estimate_dict[i][0]):
+                if re.search('.+_[Ee][Ss].+', self.estimate_dict[i][0]):
                     self.estimate_dict[i][2] = 1
                     self.default_estimate = self.estimate_dict[i][0]
                     break

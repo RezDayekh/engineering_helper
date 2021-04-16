@@ -26,11 +26,41 @@ class MainWindow:
         '''call the displaying functions'''
         self.__create_top_frame()
         self.__create_bottom_frame()
-
         
     def __select_job(self):
         '''this function will select the right job and call another function to display the buttons'''
         self.selected_job = self.job_choose_box.get()
+        #when you select the job, configure the buttons
+        self.__set_buttons_state()
+
+    def __set_buttons_state(self):
+        '''this function will decide to either make buttons active or not'''
+        if self.main_jobs_dict[self.selected_job].default_quote == '':
+            self.quote_button['state'] = 'disabled'
+        else:
+            self.quote_button['state'] = 'normal'
+    
+        if self.main_jobs_dict[self.selected_job].default_ab == '':
+            self.ab_button['state'] = 'disabled'
+        else:
+            self.ab_button['state'] = 'normal'
+
+        if self.main_jobs_dict[self.selected_job].default_estimate == '':
+            self.est_button['state'] = 'disabled'
+        else:
+            self.est_button['state'] = 'normal'
+
+        if self.main_jobs_dict[self.selected_job].default_shop_drawing == '':
+            self.shops_button['state'] = 'disabled'
+        else:
+            self.shops_button['state'] = 'normal'
+
+    def __refresh_job(self):
+        '''this button will configure the buttons to display the newly added files
+        for example, first time you add the file path, there is not shops
+        once you add the shops, click refresh and the shops button is working and displays shops'''
+        self.main_jobs_dict[self.selected_job].explore_directory(self.main_jobs_dict[self.selected_job].job_path)
+        self.__set_buttons_state()
 
     def __create_top_frame(self):
         '''this top frame will have the label, combobox
@@ -42,7 +72,7 @@ class MainWindow:
         select_job_button = tk.Button(self.root, text='Select Job', width = 8, command=self.__select_job)
         select_job_button.place(x=65, y=45)
 
-        refresh_job_button = tk.Button(self.root, text='Refresh Job', width = 8)
+        refresh_job_button = tk.Button(self.root, text='Refresh Job', width = 8, command=self.__refresh_job)
         refresh_job_button.place(x=135, y=45)
 
         delete_job_button = tk.Button(self.root, text='Delete Job', width = 8)
@@ -59,14 +89,8 @@ class MainWindow:
         self.new_job_button.place(x=275, y=7)
 
         self.new_job_button = tk.Button(self.root, text='update', width=5, height = 1, command=self.update_list)
-        self.new_job_button.place(x=300, y=7)
+        self.new_job_button.place(x=300, y=7)   
 
-
-   
-
-    def __refresh_job(self):
-        '''this job will go through the path again and get new documents'''
-        pass
 
     def update_list(self):
         self.main_jobs_dict = self.entry_window.jobs_dict
@@ -75,40 +99,46 @@ class MainWindow:
                 self.jobs_names_list.append(key)
         self.job_choose_box['values'] = self.jobs_names_list
 
-
     def __display_quote(self):
         self.main_jobs_dict[self.selected_job].dispaly_default_quote()
 
     def __dispaly_estimate(self):
         self.main_jobs_dict[self.selected_job].display_default_estimate()
 
+    def __display_shops(self):
+        self.main_jobs_dict[self.selected_job].display_default_shops()
+
+    def __display_ab(self):
+        self.main_jobs_dict[self.selected_job].display_default_ab()
+
+    def __display_file(self):
+        self.main_jobs_dict[self.selected_job].display_file()
+
     def __create_bottom_frame(self):
         '''this will create the files buttons'''
-        shops_button = tk.Button(self.root, text='File', width = 8)
-        shops_button.place(x=90, y=100)
+        #shops_button = tk.Button(self.root, text='File', width = 8)
+        #shops_button.place(x=90, y=100)
 
-        shops_button = tk.Button(self.root, text='Eweb', width = 8)
-        shops_button.place(x=210, y=100)
+        #shops_button = tk.Button(self.root, text='Eweb', width = 8)
+        #shops_button.place(x=210, y=100)
 
-        shops_button = tk.Button(self.root, text='Quote', width = 8, command=self.__display_quote)
-        shops_button.place(x=30, y=150)
+        self.quote_button = tk.Button(self.root, text='Quote', width = 8, command=self.__display_quote)
+        self.quote_button.place(x=30, y=150)
 
-        shops_button = tk.Button(self.root, text='Estimate', width = 8, command=self.__dispaly_estimate)
-        shops_button.place(x=150, y=150)
+        self.est_button = tk.Button(self.root, text='Estimate', width = 8, command=self.__dispaly_estimate)
+        self.est_button.place(x=150, y=150)
 
-        shops_button = tk.Button(self.root, text='PO', width = 8)
-        shops_button.place(x=270, y=150)
+        self.file_button = tk.Button(self.root, text='File', width = 8, command=self.__display_file)
+        self.file_button.place(x=270, y=150)
 
-        shops_button = tk.Button(self.root, text='Engtool', width = 8)
-        shops_button.place(x=30, y=200)
+        self.engtool_button = tk.Button(self.root, text='Engtool', width = 8)
+        self.engtool_button.place(x=30, y=200)
 
-        shops_button = tk.Button(self.root, text='Shops', width = 8)
-        shops_button.place(x=150, y=200)
+        self.shops_button = tk.Button(self.root, text='Shops', width = 8, command=self.__display_shops)
+        self.shops_button.place(x=150, y=200)
 
-        shops_button = tk.Button(self.root, text='As-Builts', width = 8)
-        shops_button.place(x=270, y=200)
-
-    
+        self.ab_button = tk.Button(self.root, text='As-Builts', width = 8, command=self.__display_ab)
+        self.ab_button.place(x=270, y=200)    
 
     def __job_entry_window(self):
         '''this will be called when you  press on the new job button
@@ -137,7 +167,6 @@ class AdditionWindow():
         self.__enter_job_path()
         self.__enter_job_name()
         self.__enter_buttons()
-
 
     def __enter_job_path(self):
         '''this function will create the job path'''
