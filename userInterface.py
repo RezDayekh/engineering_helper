@@ -69,18 +69,18 @@ class MainWindow:
         jobs_label.place(x=0, y=10)
 
         #job buttons
-        select_job_button = tk.Button(self.root, text='Select Job', width = 8, command=self.__select_job)
+        select_job_button = tk.Button(self.root, text='Select Job', width = 5, command=self.__select_job)
         select_job_button.place(x=65, y=45)
 
-        refresh_job_button = tk.Button(self.root, text='Refresh Job', width = 8, command=self.__refresh_job)
+        refresh_job_button = tk.Button(self.root, text='Refresh Job', width = 5, command=self.__refresh_job)
         refresh_job_button.place(x=135, y=45)
 
-        delete_job_button = tk.Button(self.root, text='Delete Job', width = 8)
+        delete_job_button = tk.Button(self.root, text='Delete Job', width = 5)
         delete_job_button.place(x=205, y=45)
         
         #this list will have the jobs
         #quote_list = [111,222,333,444]
-        self.job_choose_box = Combobox(self.root, state='readonly', width=30)
+        self.job_choose_box = Combobox(self.root, state='readonly', width=20)
         self.job_choose_box.place(x=65, y=10)
         self.job_choose_box.bind('<<ComboboxSelected>>')
 
@@ -114,6 +114,9 @@ class MainWindow:
     def __display_file(self):
         self.main_jobs_dict[self.selected_job].display_file()
 
+    def __start_engtool(self):
+        self.main_jobs_dict[self.selected_job].display_engtool()
+
     def __create_bottom_frame(self):
         '''this will create the files buttons'''
         #shops_button = tk.Button(self.root, text='File', width = 8)
@@ -131,7 +134,7 @@ class MainWindow:
         self.file_button = tk.Button(self.root, text='File', width = 8, command=self.__display_file)
         self.file_button.place(x=270, y=150)
 
-        self.engtool_button = tk.Button(self.root, text='Engtool', width = 8)
+        self.engtool_button = tk.Button(self.root, text='Engtool', width = 8, command=self.__start_engtool)
         self.engtool_button.place(x=30, y=200)
 
         self.shops_button = tk.Button(self.root, text='Shops', width = 8, command=self.__display_shops)

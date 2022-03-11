@@ -86,7 +86,11 @@ class Jobs:
         '''this function will be called to display the main directory'''
         os.startfile(self.job_path)
 
-#========================= AB ==========================
+    def display_engtool(self):
+        engtool = 'EngTool 2020'
+        os.startfile(engtool)
+
+#========================= As Builts ==========================
     def add_ab(self,x_file):
         '''this function will append the as-builts drawings and its information to the dictionary'''
         self.ab_dict[self.ab_counter] = []
